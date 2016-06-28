@@ -64,14 +64,7 @@ func main() {
 	signal.Notify(signals, os.Interrupt, os.Kill)
 
 	opts.target = flag.Args()[0]
-	if !strings.Contains(opts.target, ":") {
-		if opts.https {
-			opts.target += ":443"
-		} else {
-			opts.target += ":80"
-		}
-	}
-
+	
 	if opts.timermode {
 		go timer(opts)
 	} else {
@@ -192,12 +185,12 @@ func openConnection(opts options) (net.Conn, error) {
 
 	if opts.https {
 		config := &tls.Config{InsecureSkipVerify: true}
-		conn, err = tls.Dial("tcp", opts.target, config)
+		conn, err = tls.Dial("tcp", opts.target + ":443", config)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		conn, err = net.DialTimeout("tcp", opts.target, timeoutDuration)
+		conn, err = net.DialTimeout("tcp", opts.target + ":80", timeoutDuration)
 		if err != nil {
 			return nil, err
 		}
